@@ -18,7 +18,9 @@ logger = logging.getLogger(__name__)
 
 async def main() -> None:
 
-    bot = Bot(token=load_config.tg_bot.token)
+    config: Config = load_config()
+
+    bot = Bot(token=config.tg_bot.token)
     dp = Dispatcher()
 
     dp.include_router(other_router)
