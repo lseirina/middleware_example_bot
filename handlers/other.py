@@ -11,11 +11,11 @@ logger = logging.getLogger(__name__)
 other_router = Router()
 
 
-@other_router.message(MyTrueFilter)
+@other_router.message(MyTrueFilter())
 async def send_echo(message: Message):
     logger.debug('Entered echo-handler')
     try:
-        await message.send_copy(chat_id=message.chat_id)
+        await message.send_copy(chat_id=message.chat.id)
     except TypeError:
-        await message.answer(text=LEXICON_RU['no_echo'])
+        await message.reply(text=LEXICON_RU['no_echo'])
     logger.debug('Left echo-handler')

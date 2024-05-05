@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 user_router = Router()
 
 
-@user_router.callback_query(CommandStart, MyTrueFilter)
+@user_router.callback_query(CommandStart, MyTrueFilter())
 async def process_start_command(message: Message):
     logger.debug('Вошли в хэндлер, обрабатывающий команду /start')
     button = InlineKeyboardButton(
@@ -32,14 +32,14 @@ async def process_start_command(message: Message):
     logger.debug('Вышли в хэндлер, обрабатывающий команду /start')
 
 
-@user_router.callback_query(MyTrueFilter)
+@user_router.callback_query(MyTrueFilter())
 async def process_button_click(callback: CallbackQuery):
     logger.debug('Вошли в хэндлер, обрабатывающий нажатие на инлайн-кнопку')
     await callback.answer(LEXICON_RU['pressed_button'])
     logger.debug('Вышли в хэндлер, обрабатывающий нажатие на инлайн-кнопку')
 
 
-@user_router.message(F.text, MyFalseFilter)
+@user_router.message(F.text, MyFalseFilter())
 async def process_text(message: Message):
     logger.debug('Вошли в хэндлер, обрабатывающий текст')
     logger.debug('Выходим из хэндлера, обрабатывающего текст')

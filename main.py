@@ -5,7 +5,16 @@ from aiogram import Bot, Dispatcher
 from config_data.config import Config, load_config
 from handlers.other import other_router
 from handlers.user import user_router
-
+from middlewares.inner import (
+    FirstInnerMiddleware,
+    SecondInnerMiddleware,
+    ThirdInnerMiddleware,
+)
+from middlewares.outer import (
+    FirstOuterMiddleware,
+    SecondOuterMiddleware,
+    ThirdOuterMiddleware,
+)
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -23,8 +32,10 @@ async def main() -> None:
     bot = Bot(token=config.tg_bot.token)
     dp = Dispatcher()
 
-    dp.include_router(other_router)
     dp.include_router(user_router)
+    dp.include_router(other_router)
+
+    dp.update.outer_middleware(FirstOuterMiddleware)
 
     await dp.start_polling(bot)
 
