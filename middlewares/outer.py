@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 class FirstOuterMiddleware(BaseMiddleware):
-    async def __cal__(
+    async def __call__(
         self,
         handler: Callable[[TelegramObject, Dict[str, Any]], Awaitable[Any]],
         event: TelegramObject,
@@ -29,9 +29,9 @@ class FirstOuterMiddleware(BaseMiddleware):
 
 
 class SecondOuterMiddleware(BaseMiddleware):
-    async def __cal__(
+    async def __call__(
         self,
-        handler: Callable[[TelegramObject, Dict[str, Any], Awaitable[Any]]],
+        handler: Callable[[TelegramObject, Dict[str, Any]], Awaitable[Any]],
         event: TelegramObject,
         data: Dict[str, Any]
     ):

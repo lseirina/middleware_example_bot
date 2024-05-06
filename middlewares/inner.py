@@ -28,11 +28,10 @@ class FirstInnerMiddleware(BaseMiddleware):
         return result
 
 
-
 class SecondInnerMiddleware(BaseMiddleware):
     async def __cal__(
         self,
-        handler: Callable[[TelegramObject, Dict[str, Any], Awaitable[Any]]],
+        handler: Callable[[TelegramObject, Dict[str, Any]], Awaitable[Any]],
         event: TelegramObject,
         data: Dict[str, Any]
     ):
