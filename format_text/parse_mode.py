@@ -8,7 +8,7 @@ bot = Bot(token=BOT_TOKEN, parse_mode='HTML')
 dp = Dispatcher()
 
 
-@dp.message(CommandStart)
+@dp.message(CommandStart())
 async def process_start_command(message: Message):
     await message.answer(
         text='This is a demonstrating bot\n'
