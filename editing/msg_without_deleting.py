@@ -25,34 +25,32 @@ jokes: dict[int, str] = {
 }
 
 
-def random_joke(jokes):
+def random_joke():
     return random.randint(1, len(jokes))
 
 
 @dp.message(Command(commands=['start', 'joke']))
 async def process_start_command(message: Message):
     keyboard: list = [
-        InlineKeyboardButton(text='I want more',
-                             callback_data='more')
+        [InlineKeyboardButton(text='I want more', callback_data='more')]
     ]
     markup = InlineKeyboardMarkup(inline_keyboard=keyboard)
     await message.answer(
-        text=jokes[random_joke],
-        markup=markup
+        text=jokes[random_joke()],
+        reply_markup=markup
     )
 
 
 @dp.callback_query(F.data == 'more')
 async def process_more_press(callback=CallbackQuery):
     keyboard: list[list[InlineKeyboardButton]] = [
-        InlineKeyboardButton(text='I want more',
-                             callback_data='more')
+        [InlineKeyboardButton(text='I want more', callback_data='more')]
     ]
     markup = InlineKeyboardMarkup(inline_keyboard=keyboard)
     await callback.answer()
     await callback.message.answer(
         text=jokes[random_joke()],
-        markup=markup
+        reply_markup=markup
     )
 
 
