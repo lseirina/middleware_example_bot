@@ -47,8 +47,7 @@ async def process_more_press(callback=CallbackQuery):
         [InlineKeyboardButton(text='I want more', callback_data='more')]
     ]
     markup = InlineKeyboardMarkup(inline_keyboard=keyboard)
-    await callback.message.delete()
-    await callback.message.answer(
+    await callback.message.edit_text(
         text=jokes[random_joke()],
         reply_markup=markup
     )
