@@ -1,14 +1,16 @@
 from aiogram import Bot, Dispatcher, F
 from aiogram.filters import CommandStart
 from aiogram.types import (
+    CallbackQuery,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
-    InputMediaPhot,
+    InputMediaPhoto,
     InputMediaAudio,
     InputMediaVideo,
     Message,
 )
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram.exceptions import TelegramBadRequest
 
 
 BOT_TOKEN = '6883498485:AAGtOZFurG3T-H2oDNwhQcUqeUzlMfqcJHE'
@@ -31,7 +33,7 @@ LEXICON: dict[str, str] = {
 }
 
 
-def get_markup(width: int, *args, **kwargs):
+def get_markup(width: int, *args, **kwargs) -> InlineKeyboardMarkup:
     kb_builder = InlineKeyboardBuilder()
     buttons: list[InlineKeyboardButton] = []
     if args:
@@ -48,9 +50,49 @@ def get_markup(width: int, *args, **kwargs):
                 text=text,
                 callback_data=button
             ))
-    kb_builder.row(*buttons, width)
+    kb_builder.row(*buttons, width=width)
     return kb_builder.as_markup()
+
 
 @dp.message(CommandStart())
 async def process_start_command(message: Message):
-    pass
+    markup = get_markup(2, 'photo')
+    await message.answer_photo(
+        photo=LEXICON['photo_id1'],
+        caption='It is the 1-st photo',
+        reply_markup=markup
+    )
+
+
+@dp.callback_query(F.data.in_(['voice', 'video', 'photo']))
+async def process_button_press(callback: CallbackQuery, bot: Bot):
+    markup = get_markup(2, 'photo')
+    try:
+        await bot.edit_message_media(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            media=InputMediaPhoto(
+                media=LEXICON['photo_id2'],
+                caption='It is the 2-nd button'
+            ),
+            reply_markup=markup
+        )
+    except TelegramBadRequest:
+        await bot.edit_message_media(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            media=InputMediaPhoto(
+                media=LEXICON['photo_id1'],
+                caption="This is a first photo"
+            ),
+            reply_markup=markup
+        )
+
+
+@dp.message()
+async def process_other_command(message: Message):
+    await message.answer(text='I don`t understand')
+
+
+if __name__ == '__main__':
+    dp.run_polling(bot)
