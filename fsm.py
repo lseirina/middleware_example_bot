@@ -28,7 +28,7 @@ class FSMFillForm(StatesGroup):
     fill_wish_news = State()
 
 
-@dp.message(CommandStart, StateFilter(default_state))
+@dp.message(CommandStart(), StateFilter(default_state))
 async def process_start_command(message: Message):
     await message.answer(
         text="To fullfill the form send /fillform"
@@ -77,7 +77,7 @@ async def process_age_send(message: Message, state: FSMContext):
     await state.update_data(age=message.text)
     f_button = InlineKeyboardButton(
         text='female',
-        calback_data='female'
+        callback_data='female'
     )
     m_button = InlineKeyboardButton(
         text='male',
@@ -108,7 +108,7 @@ async def process_gender_sent(callback: CallbackQuery, state: FSMContext):
     await state.set_state(FSMFillForm.upload_photo)
 
 
-@dp.message(StateFilter.fill_gender)
+@dp.message(StateFilter(FSMFillForm.fill_gender))
 async def warning_not_gender(message: Message):
     await message.answer(
         text='It is not gender'
@@ -152,7 +152,7 @@ async def warning_not_photo(message: Message):
                                F.data.in_(['secondary', 'high'])))
 async def process_education_sent(callback: CallbackQuery, state: FSMContext,):
     await state.update_data(education=callback.data)
-    user_dict[callback.from_user.id] = await state.get_date()
+    user_dict[callback.from_user.id] = await state.get_data()
     await state.clear()
     await callback.message.edit_text(text='Thanks. Data saved.')
 
@@ -169,7 +169,7 @@ async def process_showdata_command(message: Message):
             photo=user_dict[message.from_user.id]['photo_id'],
             caption=f'Name: {user_dict[message.from_user.id]["name"]}\n'
                     f'Age: {user_dict[message.from_user.id]["age"]}\n'
-                    f'Gender: {user_dict[message.from_user.id]["gender"]}'
+                    f'Gender: {user_dict[message.from_user.id]["gender"]}/n'
                     f'Education: {user_dict[message.from_user.id]["education"]}'
         )
     else:
