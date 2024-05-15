@@ -98,7 +98,7 @@ async def warning_not_age(message: Message):
 
 
 @dp.callback_query(StateFilter(FSMFillForm.fill_gender),
-                   F.data.in_('female', 'male'))
+                   F.data.in_(['female', 'male']))
 async def process_gender_sent(callback: CallbackQuery, state: FSMContext):
     await state.update_data(gender=callback.data)
     await callback.message.delete()
@@ -140,9 +140,23 @@ async def process_photo_sent(message: Message,
         text='Thanks',
         reply_markup=markup
     )
-    await state.set_state(default_state)
+    await state.set_state(FSMFillForm.fill_education)
 
 
 @dp.message(StateFilter(FSMFillForm.upload_photo))
 async def warning_not_photo(message: Message):
     await message.answer('I is not a photo')
+
+
+@dp.callback_query(StateFilter(FSMFillForm.fill_education,
+                               F.data.in_(['secondary', 'high'])))
+async def process_education_sent(callback: CallbackQuery, state: FSMContext,):
+    await state.update_data(education=callback.data)
+    user_dict[callback.from_user.id] = await state.get_date()
+    await state.clear()
+    await callback.message.edit_text(text='Thanks. Data saved.')
+
+
+@dp.message(StateFilter(FSMFillForm.fill_education))
+async def warning_not_education(message: Message):
+    await message.answer('It is not aducation')
