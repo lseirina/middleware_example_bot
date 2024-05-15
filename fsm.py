@@ -160,3 +160,28 @@ async def process_education_sent(callback: CallbackQuery, state: FSMContext,):
 @dp.message(StateFilter(FSMFillForm.fill_education))
 async def warning_not_education(message: Message):
     await message.answer('It is not aducation')
+
+
+@dp.message(Command(commands='showdata'), StateFilter(default_state))
+async def process_showdata_command(message: Message):
+    if message.from_user.id in user_dict:
+        await message.answer_photo(
+            photo=user_dict[message.from_user.id]['photo_id'],
+            caption=f'Name: {user_dict[message.from_user.id]["name"]}\n'
+                    f'Age: {user_dict[message.from_user.id]["age"]}\n'
+                    f'Gender: {user_dict[message.from_user.id]["gender"]}'
+                    f'Education: {user_dict[message.from_user.id]["education"]}'
+        )
+    else:
+        await message.enswer(
+            text='You did not fill the form.'
+        )
+
+
+@dp.message(StateFilter(default_state))
+async def process_other_command(message: Message):
+    await message.answer(text='Sorry, I don`t understand')
+
+
+if __name__ == '__main__':
+    dp.run_polling(bot)
