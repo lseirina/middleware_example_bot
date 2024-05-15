@@ -87,7 +87,7 @@ async def process_age_send(message: Message, state: FSMContext):
     markup = InlineKeyboardMarkup(inline_keyboard=keyboard)
     await message.answer(
         text='Choose your gender',
-        markup=markup
+        reply_markup=markup
     )
     await state.set_state(FSMFillForm.fill_gender)
 
@@ -113,3 +113,36 @@ async def warning_not_gender(message: Message):
     await message.answer(
         text='It is not gender'
     )
+
+
+@dp.message(StateFilter(FSMFillForm.upload_photo),
+            F.photo[-1].as_('largest_photo'))
+async def process_photo_sent(message: Message,
+                             state: FSMContext,
+                             largest_photo: PhotoSize):
+    await state.update_data(
+        photo_unique_id=largest_photo.file_unique_id,
+        photo_id=largest_photo.file_id
+    )
+    s_button = InlineKeyboardButton(
+        text='Secondary',
+        callback_data='secondary'
+    )
+    h_button = InlineKeyboardButton(
+        text='High',
+        callback_data='high'
+    )
+    keyboard: list[list[InlineKeyboardButton]] = [
+        [s_button, h_button]
+    ]
+    markup = InlineKeyboardMarkup(inline_keyboard=keyboard)
+    await message.answer(
+        text='Thanks',
+        reply_markup=markup
+    )
+    await state.set_state(default_state)
+
+
+@dp.message(StateFilter(FSMFillForm.upload_photo))
+async def warning_not_photo(message: Message):
+    await message.answer('I is not a photo')
