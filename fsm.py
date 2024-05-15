@@ -80,8 +80,8 @@ async def process_age_send(message: Message, state: FSMContext):
         calback_data='female'
     )
     m_button = InlineKeyboardButton(
-        text='man',
-        callback_data='man'
+        text='male',
+        callback_data='male'
     )
     keyboard: list[list[InlineKeyboardButton]] = [[f_button, m_button]]
     markup = InlineKeyboardMarkup(inline_keyboard=keyboard)
@@ -90,3 +90,26 @@ async def process_age_send(message: Message, state: FSMContext):
         markup=markup
     )
     await state.set_state(FSMFillForm.fill_gender)
+
+
+@dp.message(StateFilter(FSMFillForm.fill_age))
+async def warning_not_age(message: Message):
+    await message.answer('It is not an age.')
+
+
+@dp.callback_query(StateFilter(FSMFillForm.fill_gender),
+                   F.data.in_('female', 'male'))
+async def process_gender_sent(callback: CallbackQuery, state: FSMContext):
+    await state.update_data(gender=callback.data)
+    await callback.message.delete()
+    await callback.message.answer(
+        text='Upload your photo'
+    )
+    await state.set_state(FSMFillForm.upload_photo)
+
+
+@dp.message(StateFilter.fill_gender)
+async def warning_not_gender(message: Message):
+    await message.answer(
+        text='It is not gender'
+    )
