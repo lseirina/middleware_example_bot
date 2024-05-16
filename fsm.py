@@ -2,7 +2,7 @@ from aiogram import Bot, Dispatcher, F
 from aiogram.filters import Command, CommandStart, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state, State, StatesGroup
-from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.fsm.storage.redis import RedisStorage, Redis
 from aiogram.types import (
     CallbackQuery,
     InlineKeyboardButton,
@@ -12,7 +12,8 @@ from aiogram.types import (
 )
 
 BOT_TOKEN = '6883498485:AAGtOZFurG3T-H2oDNwhQcUqeUzlMfqcJHE'
-storage = MemoryStorage()
+redis = Redis(host='localhost')
+storage = RedisStorage(redis=redis)
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher(storage=storage)
 
@@ -137,7 +138,7 @@ async def process_photo_sent(message: Message,
     ]
     markup = InlineKeyboardMarkup(inline_keyboard=keyboard)
     await message.answer(
-        text='Thanks',
+        text='Your education',
         reply_markup=markup
     )
     await state.set_state(FSMFillForm.fill_education)
@@ -169,7 +170,7 @@ async def process_showdata_command(message: Message):
             photo=user_dict[message.from_user.id]['photo_id'],
             caption=f'Name: {user_dict[message.from_user.id]["name"]}\n'
                     f'Age: {user_dict[message.from_user.id]["age"]}\n'
-                    f'Gender: {user_dict[message.from_user.id]["gender"]}/n'
+                    f'Gender: {user_dict[message.from_user.id]["gender"]}\n'
                     f'Education: {user_dict[message.from_user.id]["education"]}'
         )
     else:
